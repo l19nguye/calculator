@@ -1,0 +1,35 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+
+  pre_build:
+    commands:
+      - echo "Setting up git..."
+      # The secret 'github-pat-for-codepipeline' must be created in AWS Secrets Manager
+      - git config --global user.email "mr.dinhlam@gmail.com"
+      - git config --global user.name "Lam"
+      # Retrieve the GitHub token from Secrets Manager and configure git credentials
+      - export GITHUB_TOKEN=$(aws secretsmanager get-secret-value --secret-id github-pat-for-codepipeline --query SecretString --output text)
+      - git remote set-url origin https://${GITHUB_TOKEN}@github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+
+  build:
+    commands:
+      - echo "Running unit tests..."
+      # This command will discover and run tests in files named test_*.py
+      # If any test fails, CodeBuild stops here with a FAILED status.
+      - python -m unittest discover -v
+
+  post_build:
+    commands:
+      - echo "Tests passed. Merging sit -> prod"
+      # CODEBUILD_BUILD_SUCCEEDING is 1 if the build phase passed
+      - |
+        if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ]; then
+          git fetch origin
+          git checkout -b prod origin/prod || git checkout -b prod
+          git merge origin/sit -m "CodeBuild merge from sit to prod"
+          git push origin prod
+        fi
