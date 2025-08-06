@@ -4,23 +4,19 @@ phases:
   install:
     runtime-versions:
       python: 3.11
+    commands:
+      - pip install -r requirements.txt
 
   pre_build:
     commands:
       - echo "Setting up git..."
-      # The secret 'github-pat-for-codepipeline' must be created in AWS Secrets Manager
-      - git config --global user.email "mr.dinhlam@gmail.com"
-      - git config --global user.name "Lam"
-      # Retrieve the GitHub token from Secrets Manager and configure git credentials
-      - export GITHUB_TOKEN=$(aws secretsmanager get-secret-value --secret-id github-pat-for-codepipeline --query SecretString --output text)
-      - git remote set-url origin https://${GITHUB_TOKEN}@github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
 
   build:
     commands:
       - echo "Running unit tests..."
       # This command will discover and run tests in files named test_*.py
       # If any test fails, CodeBuild stops here with a FAILED status.
-      - python -m unittest discover -v
+      - python -m pytest --junitxml=test-reports/report.xml
 
   post_build:
     commands:
