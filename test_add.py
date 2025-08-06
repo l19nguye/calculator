@@ -1,4 +1,4 @@
-from lambda_function import add
+from lambda_function import lambda_handler
 
-def test_add():
-    assert add(4,5) == 9
+def test_lambda():
+    assert lambda_handler("david", None)['statusCode'] == 200
