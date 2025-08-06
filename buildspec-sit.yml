@@ -19,6 +19,11 @@ phases:
       - echo "Build started on $(date)"
       - echo "packaging the application ..."
       - zip -r application.zip .
+  
+  post_build:
+    commands:
+      # This command confirms the build phase was successful.
+      - echo "Build completed on $(date)"
 artifacts:
   files:
     # This specifies which file(s) to save as the output of this build stage
