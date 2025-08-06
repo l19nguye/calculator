@@ -18,7 +18,7 @@ phases:
     commands:
       - echo "Build started on $(date)"
       - echo "packaging the application ..."
-      - zip -r application.zip
+      - zip -r application.zip .
 artifacts:
   files:
     # This specifies which file(s) to save as the output of this build stage
