@@ -12,9 +12,9 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'message': message
         }
-    except ex:
+    except Exception as e:
         return {
             'statusCode': 400,
-            'message': 'exception occurred'
+            'message': f'exception {str(e)} occurred'
         }
     
